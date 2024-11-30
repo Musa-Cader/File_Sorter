@@ -1,0 +1,108 @@
+#Musa Cader
+#btw I'm a beginner so please constructively criticize
+import os
+import shutil
+from PyPDF2 import PdfReader # you have to install this library
+from PyPDF2.errors import PdfReadError
+
+
+
+oldpath = r"Your own path etc, the folder which you want to organize"
+image_dir = r"Where you want imaged to go"
+Data_analytics = r"etc" #Since I'm a student I'm organizing the pdf's that contains a relevant keyword here
+Electronics=r"etc"
+image_extensions = [".jpg", ".jpeg", ".jpe", ".jif", ".jfif", ".jfi", ".png", ".gif", ".webp", ".tiff", ".tif", ".psd", ".raw", ".arw", ".cr2", ".nrw",
+                    ".k25", ".bmp", ".dib", ".heif", ".heic", ".ind", ".indd", ".indt", ".jp2", ".j2k", ".jpf", ".jpf", ".jpx", ".jpm", ".mj2", ".svg", ".svgz", ".ai", ".eps", ".ico"]
+DOCS=r"etc"
+ZIPS=r"etc"
+MATLAB=r"etc"
+VIDEO=r"etc"
+APPLICATION=r"etc"
+Rstudio_extensions=[".r",".rmd",".csv","xsl","xsls"]
+
+video_extensions = [".webm", ".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".ogg",
+                    ".mp4", ".mp4v", ".m4v", ".avi", ".wmv", ".mov", ".qt", ".flv", ".swf", ".avchd"]
+
+document_extensions = [".doc", ".docx", ".odt",
+                       ".pdf", ".xls", ".xlsx", ".ppt", ".pptx"]
+# Make sure the destination folder exists
+os.makedirs(image_dir, exist_ok=True)
+
+# Move the file into the destination folder with the same filename
+for filename in os.listdir(oldpath):
+    file_path=os.path.join(oldpath,filename)
+    
+    for image_exetension in image_extensions:
+        if os.path.isfile(file_path) and (filename.endswith(image_exetension) or filename.endswith(image_exetension.upper())):
+            print(f"Found : {filename} moving this to {image_dir}")
+            os.makedirs(image_dir,exist_ok=True)
+            shutil.move(file_path,os.path.join(image_dir,filename))
+
+    for Rstudio_extension in Rstudio_extensions:
+        if os.path.isfile(file_path) and (filename.lower().endswith(Rstudio_extension)):
+            print(f"Found : {filename} moving this to {Data_analytics}")
+            os.makedirs(Data_analytics,exist_ok=True)
+            shutil.move(file_path,os.path.join(Data_analytics,filename))
+
+    for pdf_extenstion in document_extensions:
+        if os.path.isfile(file_path) and (filename.endswith(pdf_extenstion) or filename.endswith(pdf_extenstion.upper())):
+            os.makedirs(Data_analytics,exist_ok=True)
+            
+            terms2checkelectronics = ['electronics', 'tronics', 'troniks']
+            termsData_Analytics = ['Data_Analytics', 'data analytics', 'burger']
+            if pdf_extenstion.lower()==".pdf":
+
+                reader = PdfReader(file_path)
+                text = ""
+                for page in reader.pages:
+                    text += page.extract_text()
+                text = text.lower()
+
+                #sends to my electronics folder
+                terms2checkelectronics = [term.lower() for term in terms2checkelectronics]
+                found_terms = [term for term in terms2checkelectronics if term in text]
+                if found_terms:
+                    
+                    shutil.move(file_path,os.path.join(Electronics,filename))
+                    print(f"Terms found: {', '.join(found_terms)}. The file went to {Electronics}.")
+                else:
+                    print(f"None of the Electronics terms are found in {filename} file.")
+                #### this now checks for Data Analytics
+                termsData_Analytics = [term.lower() for term in termsData_Analytics]
+                found_termsData = [term for term in termsData_Analytics if term in text]
+                #sends to my Data analytics folder
+                if found_termsData:
+                    
+                    shutil.move(file_path,os.path.join(Data_analytics,filename))
+                    print(f"Terms found: {', '.join(found_termsData)}. The file went to {Data_analytics}.")
+                else:
+                    print(f"None of the Data Analtycis terms are found in {filename} file.")
+
+            else:
+                shutil.move(file_path,os.path.join(DOCS,filename))
+                print(f"MOved {filename} to {DOCS}")
+    
+    #This is for Zip files
+    if os.path.isfile(file_path) and (filename.lower().endswith(".zip")):
+            print(f"Found {filename} moving this to {ZIPS}")
+            os.makedirs(ZIPS,exist_ok=True)
+            shutil.move(file_path,os.path.join(ZIPS,filename))
+    # this if for Matlab
+    if os.path.isfile(file_path) and (filename.lower().endswith(".mlx")):
+           
+            os.makedirs(MATLAB,exist_ok=True)
+            shutil.move(file_path,os.path.join(MATLAB,filename))
+            print(f"Found {filename} moved this to {MATLAB}")
+
+    # this is for video files
+    for video_extension in video_extensions:
+        if os.path.isfile(file_path) and (filename.lower().endswith(video_extension)):           
+            os.makedirs(VIDEO,exist_ok=True)
+            shutil.move(file_path,os.path.join(VIDEO,filename))
+            print(f"Found : {filename} moved this to {VIDEO}")
+    
+    #this is for applications
+    if os.path.isfile(file_path) and (filename.lower().endswith(".exe")):           
+            os.makedirs(APPLICATION,exist_ok=True)
+            shutil.move(file_path,os.path.join(APPLICATION,filename))
+            print(f"Found {filename} moved this to {APPLICATION}")
